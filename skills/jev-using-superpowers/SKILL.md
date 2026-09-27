@@ -30,9 +30,10 @@ All skills require local Jev tooling:
 - `jev-guard` on PATH
 - `supercov` on PATH (`npm install -g supercov`)
 - Valid `$TYPESAFE_API_KEY` (Free tier from `https://console.typesafe.ai`)
+- Or valid `$OPENJEV_API_KEY` (Free tier from `https://openjev.sh/dashboard`)
 
-If `$TYPESAFE_API_KEY` is missing: **STOP IMMEDIATELY**.
-Direct user to export `TYPESAFE_API_KEY` before proceeding. Never fall back to unverified LLM guessing silently.
+If both `$TYPESAFE_API_KEY` and `$OPENJEV_API_KEY` are missing: **STOP IMMEDIATELY**.
+Direct user to export `TYPESAFE_API_KEY` or `OPENJEV_API_KEY` before proceeding. To force OpenJEV even when a TypeSafe key is present, set `JEV_PROVIDER=openjev`. Never fall back to unverified LLM guessing silently.
 
 ## Failure Modes
 See docs/CONFIDENCE.md for thresholds. When the gate tool is missing, the key is invalid, the registry is offline, or confidence falls below the Stop band: STOP, state which input failed, and never degrade to unverified guessing silently.

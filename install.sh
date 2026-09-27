@@ -51,10 +51,28 @@ if [ -n "${TYPESAFE_BASE_URL:-}" ] || [ "${TYPESAFE_BACKEND:-}" = "laya" ]; then
     has_local=1
 fi
 
-if [ -z "${TYPESAFE_API_KEY:-}" ] && [ "$has_local" -eq 0 ]; then
+# Provider selection: JEV_PROVIDER=openjev wins; else TypeSafe if TYPESAFE_API_KEY set; else OpenJEV if OPENJEV_API_KEY set
+use_openjev=0
+if [ "${JEV_PROVIDER:-}" = "openjev" ]; then
+    use_openjev=1
+elif [ -z "${TYPESAFE_API_KEY:-}" ] && [ -n "${OPENJEV_API_KEY:-}" ]; then
+    use_openjev=1
+fi
+
+if [ "$use_openjev" -eq 1 ] && [ "$has_local" -eq 0 ]; then
+    if [ -n "${OPENJEV_API_KEY:-}" ]; then
+        echo "✔ OPENJEV_API_KEY is configured (OpenJEV gateway to Jev)."
+    else
+        echo ""
+        echo "❌ JEV_PROVIDER=openjev but OPENJEV_API_KEY is not set."
+        echo "  Get your free API key at: https://openjev.sh/dashboard"
+        exit 1
+    fi
+elif [ -z "${TYPESAFE_API_KEY:-}" ] && [ "$has_local" -eq 0 ]; then
     echo ""
-    echo "❌ Neither TYPESAFE_API_KEY nor local FOSS backend is configured."
-    echo "  Cloud: Get your free API key at: https://console.typesafe.ai"
+    echo "❌ Neither TYPESAFE_API_KEY nor OPENJEV_API_KEY nor local FOSS backend is configured."
+    echo "  TypeSafe Cloud: Get your free API key at: https://console.typesafe.ai"
+    echo "  OpenJEV Gateway: Get your free API key at: https://openjev.sh/dashboard"
     echo "  Local FOSS: Run Laya via 'python scripts/serve-laya.py' and export:"
     echo "    export TYPESAFE_BASE_URL=\"http://127.0.0.1:8000\""
     echo "    export TYPESAFE_API_KEY=\"local\""

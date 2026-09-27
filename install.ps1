@@ -58,9 +58,27 @@ if ($limpetInstalled) {
 Check-Tool "jev-seo" "cargo install jev-seo"
 
 $hasLocal = [bool]($env:TYPESAFE_BASE_URL -or ($env:TYPESAFE_BACKEND -eq "laya"))
-if (!$env:TYPESAFE_API_KEY -and !$hasLocal) {
-    Write-Host "`n❌ Neither TYPESAFE_API_KEY nor local FOSS backend is configured." -ForegroundColor Red
-    Write-Host "  Cloud: Get your free API key at https://console.typesafe.ai"
+
+# Provider selection: JEV_PROVIDER=openjev wins; else TypeSafe if TYPESAFE_API_KEY set; else OpenJEV if OPENJEV_API_KEY set
+$useOpenJEV = $false
+if ($env:JEV_PROVIDER -eq "openjev") {
+    $useOpenJEV = $true
+} elseif (!$env:TYPESAFE_API_KEY -and $env:OPENJEV_API_KEY) {
+    $useOpenJEV = $true
+}
+
+if ($useOpenJEV -and !$hasLocal) {
+    if ($env:OPENJEV_API_KEY) {
+        Write-Host "`n✔ OPENJEV_API_KEY is configured (OpenJEV gateway to Jev)." -ForegroundColor Green
+    } else {
+        Write-Host "`n❌ JEV_PROVIDER=openjev but OPENJEV_API_KEY is not set." -ForegroundColor Red
+        Write-Host "  Get your free API key at https://openjev.sh/dashboard" -ForegroundColor Red
+        exit 1
+    }
+} elseif (!$env:TYPESAFE_API_KEY -and !$hasLocal) {
+    Write-Host "`n❌ Neither TYPESAFE_API_KEY nor OPENJEV_API_KEY nor local FOSS backend is configured." -ForegroundColor Red
+    Write-Host "  TypeSafe Cloud: Get your free API key at https://console.typesafe.ai"
+    Write-Host "  OpenJEV Gateway: Get your free API key at https://openjev.sh/dashboard"
     Write-Host "  Local FOSS: Run Laya via 'python scripts/serve-laya.py' and set:"
     Write-Host "    `$env:TYPESAFE_BASE_URL = 'http://127.0.0.1:8000'"
     Write-Host "    `$env:TYPESAFE_API_KEY = 'local'"

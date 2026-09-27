@@ -44,6 +44,10 @@ By **[Akash Priyadarshi](https://github.com/AkashPriyadarshii)**
 
 ---
 
+**OpenJEV support:** Jev is built by [TypeSafe](https://typesafe.ai). This fork keeps TypeSafe as the default and adds optional support for [OpenJEV](https://openjev.sh), a free community gateway to the same Jev model — set `OPENJEV_API_KEY` (or `JEV_PROVIDER=openjev`) to use it. Original project: https://github.com/AkashPriyadarshii/jev-superpowers by @AkashPriyadarshii.
+
+---
+
 ## Why
 
 Autonomous coding agents equipped with standard development methodologies still fail in predictable, expensive ways:
@@ -159,6 +163,18 @@ export TYPESAFE_API_KEY="local"
 # 4. Run installer
 bash install.sh
 ```
+
+#### Option C: OpenJEV Gateway (Free community access to Jev)
+
+```bash
+# 1. Get your free API key from https://openjev.sh/dashboard
+export OPENJEV_API_KEY="your_api_key"
+
+# 2. Run cross-platform installer
+bash install.sh
+```
+
+Set `JEV_PROVIDER=openjev` to force the OpenJEV gateway even when `TYPESAFE_API_KEY` is also present.
 
 ### Bridge Command Flags
 
